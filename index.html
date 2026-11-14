@@ -11,7 +11,7 @@ header{position:sticky;top:0;display:flex;justify-content:space-between;align-it
 .r{width:38px;height:38px;border-radius:50%;border:1px solid var(--cb);background:var(--c);color:var(--t);margin-left:6px;display:inline-grid;place-items:center;transition:.2s}.r:active{transform:scale(.9);box-shadow:0 0 14px #8b5cf6aa}
 main{padding:14px 14px 110px;max-width:560px;margin:auto}
 nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:536px;margin:auto;display:flex;background:var(--nav);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--cb);border-radius:22px;padding:6px;z-index:6;box-shadow:0 10px 30px #0006}
-nav button{flex:1;border:0;background:none;color:var(--m);padding:7px 0;border-radius:16px;display:flex;flex-direction:column;align-items:center;gap:2px;transition:.25s}nav small{font-size:10px}nav .on{color:var(--t);background:linear-gradient(135deg,#8b5cf63a,#ec48993a)}nav .on svg{color:#c4a6ff;filter:drop-shadow(0 0 6px #8b5cf6)}
+nav button{position:relative;flex:1;border:0;background:none;color:var(--m);padding:7px 0;border-radius:16px;display:flex;flex-direction:column;align-items:center;gap:2px;transition:.25s}.bd{position:absolute;top:0;right:14%;background:#ef4444;color:#fff;border-radius:10px;font:700 10px sans-serif;padding:2px 6px;box-shadow:0 0 10px #ef4444}.toast{position:fixed;top:70px;left:12px;right:12px;max-width:536px;margin:auto;z-index:30;display:flex;gap:12px;align-items:center;padding:14px;border-radius:18px;background:var(--nav);border:1px solid #8b5cf6;box-shadow:0 10px 40px #8b5cf688;animation:up .3s both;backdrop-filter:blur(14px)}.toast svg{color:#facc15;filter:drop-shadow(0 0 8px #facc15)}nav small{font-size:10px}nav .on{color:var(--t);background:linear-gradient(135deg,#8b5cf63a,#ec48993a)}nav .on svg{color:#c4a6ff;filter:drop-shadow(0 0 6px #8b5cf6)}
 .card{background:var(--c);border:1px solid var(--cb);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:18px;padding:14px;margin:10px 0;animation:up .4s both}.c{text-align:center}
 h3{margin:18px 0 6px;font-size:17px}
 input,textarea,select{width:100%;padding:12px;margin:5px 0;border-radius:12px;border:1px solid var(--cb);background:var(--c);color:var(--t);font:inherit;transition:.2s}
@@ -87,7 +87,7 @@ function shell(){
  $('#cr').onclick=()=>modal(`<div class=c><small>Tus créditos</small><h1>${money(U.balance)} USD</h1></div>`);
  $('#sh').onclick=()=>{tab='home';sel={};shell()};
  document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{tab=b.dataset.t;shell()});
- ({home,orders,wallet,prof,admin})[tab]()}
+ ({home,orders,wallet,prof,admin})[tab]();if(U.is_admin){listen();badge()}}
 
 // ---------- INICIO ----------
 async function home(){
@@ -170,7 +170,7 @@ function prof(){
 async function admin(){
  const T=[['users','Clientes'],['ord','Pedidos'],['dep','Depósitos'],['cfg','Ajustes']];
  $('#m').innerHTML=`<div class=tabs>${T.map(x=>`<button class="${x[0]==at?'on':''}" onclick="at='${x[0]}';admin()">${x[1]}</button>`).join('')}</div><div id=ad></div>`;
- await A_[at]($('#ad'))}
+ await A_[at]($('#ad'));badge()}
 const A_={
  async users(ad){
   const{data}=await sb.from('profiles').select().order('created_at',{ascending:false});
@@ -210,5 +210,12 @@ const setSup=async a=>{await sb.from('settings').upsert({key:'support',value:a.j
 W.sa=()=>{const n=(prompt('Número de WhatsApp (ej: 53975065)')||'').replace(/\D/g,'');if(n)setSup([...sup(),n])};
 W.se=i=>{const n=(prompt('Nuevo número',sup()[i])||'').replace(/\D/g,'');if(n){const a=sup();a[i]=n;setSup(a)}};
 W.sd=i=>setSup(sup().filter((_,k)=>k!=i));
+let RT=0;
+function beep(){try{const c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;g.gain.setValueAtTime(.25,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.6);o.start();o.stop(c.currentTime+.6)}catch(e){}}
+function toast(t,x){const d=document.createElement('div');d.className='toast';d.innerHTML=`${ic('bell',24)}<div><b>${t}</b><br><small>${E(x)}</small></div>`;d.onclick=()=>{d.remove();tab='admin';at=t.includes('depósito')?'dep':'ord';shell()};document.body.append(d);setTimeout(()=>d.remove(),9000);beep();navigator.vibrate&&navigator.vibrate([200,100,200])}
+async function badge(){const q=t=>sb.from(t).select('id',{count:'exact',head:true}).eq('status','pending');const[a,b]=await Promise.all([q('orders'),q('deposits')]);const n=(a.count||0)+(b.count||0),el=$('nav [data-t=admin]');if(!el)return;$('.bd',el)?.remove();if(n)el.insertAdjacentHTML('beforeend',`<i class=bd>${n}</i>`)}
+function listen(){if(RT)return;RT=1;
+ const f=(tb,t)=>sb.channel(tb).on('postgres_changes',{event:'INSERT',schema:'public',table:tb},p=>{const r=p.new;toast(t,tb=='orders'?`${r.game} · ${r.label} · ${money(r.price)} USD`:`${money(r.usd)} USD · desde ${r.from_phone}`);badge();if(tab=='admin'&&(at=='ord'||at=='dep'))admin()}).subscribe();
+ f('orders','Nuevo pedido');f('deposits','Nuevo depósito')}
 boot();
 </script></body></html>
