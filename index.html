@@ -1,30 +1,37 @@
 <!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ZYROX</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script>
 <style>
-:root{--bg:#0b0b14;--c:#171726;--t:#f1f1f8;--a:#7c3aed;--m:#9a9ab5}
-body.light{--bg:#f3f3fa;--c:#fff;--t:#16162a;--m:#666}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:15px system-ui,sans-serif}
-header{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--c);z-index:5}
-.logo{font-size:26px;font-weight:900;letter-spacing:3px;background:linear-gradient(90deg,#7c3aed,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent;margin:0}
-.r{width:36px;height:36px;border-radius:50%;border:0;background:var(--bg);margin-left:6px;font-size:16px}
-main{padding:14px 14px 90px;max-width:560px;margin:auto}
-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--c);padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;border:0;background:none;color:var(--m);padding:8px 0;font-size:18px;display:flex;flex-direction:column;align-items:center}nav small{font-size:10px}nav .on{color:var(--a)}
-.card{background:var(--c);border-radius:14px;padding:12px;margin:10px 0}.c{text-align:center}
-input,textarea,select{width:100%;padding:11px;margin:5px 0;border-radius:10px;border:1px solid #8884;background:var(--bg);color:var(--t);font:inherit}
-.b{width:100%;padding:12px;margin:5px 0;border:0;border-radius:10px;background:linear-gradient(90deg,#7c3aed,#ec4899);color:#fff;font-weight:700;font-size:15px}
-.red{background:#dc2626}.s{padding:6px 10px;border:0;border-radius:8px;background:var(--a);color:#fff;margin:4px 4px 0 0}
-.link{background:none;border:0;color:var(--a);padding:6px 0;font-size:15px}a{color:var(--a)}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.game{background:var(--c);border:0;border-radius:16px;padding:16px;color:var(--t);font-size:44px;display:flex;flex-direction:column;align-items:center;gap:6px}.game img{width:100%;height:90px;object-fit:cover;border-radius:12px}.game b{font-size:14px}
-.b2{display:flex;justify-content:space-between;width:100%;border:0;color:var(--t);font-size:15px}
-.ov{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;z-index:20;padding:16px}
-.box{background:var(--c);border-radius:18px;padding:18px;width:100%;max-width:420px;max-height:90vh;overflow:auto}
-.full{background:var(--bg)}.st{text-align:center;width:100%;max-width:420px}.st.ok{color:#22c55e}.st.no{color:#ef4444}
-.tabs{display:flex;gap:6px;overflow-x:auto}.tabs button{border:0;border-radius:8px;padding:8px 12px;background:var(--c);color:var(--t)}.tabs .on{background:var(--a);color:#fff}
-.stars span{font-size:30px;color:#888;cursor:pointer}.stars .on{color:#facc15}
-.wa{display:block;text-align:center;background:#25d366;color:#fff;padding:12px;border-radius:10px;margin:6px 0;text-decoration:none;font-weight:700}
-.row{display:flex;gap:4px;align-items:center}.p{width:100%;border-radius:10px}
+:root{--bg:#07070f;--c:rgba(255,255,255,.06);--cb:rgba(255,255,255,.1);--t:#f2f2fa;--a:#8b5cf6;--m:#a0a0be;--nav:rgba(18,18,32,.85)}
+body.light{--bg:#eeeef8;--c:rgba(255,255,255,.75);--cb:rgba(0,0,0,.08);--t:#17172b;--m:#6b6b85;--nav:rgba(255,255,255,.92)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;color:var(--t);font:15px/1.4 system-ui,sans-serif;background:var(--bg);background-image:radial-gradient(500px 400px at 10% -5%,#7c3aed55,transparent),radial-gradient(450px 380px at 100% 25%,#ec489940,transparent),radial-gradient(500px 400px at 0% 100%,#06b6d433,transparent);background-attachment:fixed;min-height:100vh}
+header{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--nav);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--cb);z-index:5}
+.logo{font-size:26px;font-weight:900;letter-spacing:4px;background:linear-gradient(90deg,#8b5cf6,#ec4899,#06b6d4,#8b5cf6);background-size:300%;-webkit-background-clip:text;background-clip:text;color:transparent;margin:0;animation:sh 6s linear infinite}
+@keyframes sh{to{background-position:300% 0}}@keyframes up{from{opacity:0;transform:translateY(12px)}}@keyframes pop{from{opacity:0;transform:scale(.92)}}@keyframes pl{50%{transform:scale(1.15);opacity:.7}}
+.r{width:38px;height:38px;border-radius:50%;border:1px solid var(--cb);background:var(--c);color:var(--t);margin-left:6px;display:inline-grid;place-items:center;transition:.2s}.r:active{transform:scale(.9);box-shadow:0 0 14px #8b5cf6aa}
+main{padding:14px 14px 110px;max-width:560px;margin:auto}
+nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:536px;margin:auto;display:flex;background:var(--nav);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--cb);border-radius:22px;padding:6px;z-index:6;box-shadow:0 10px 30px #0006}
+nav button{flex:1;border:0;background:none;color:var(--m);padding:7px 0;border-radius:16px;display:flex;flex-direction:column;align-items:center;gap:2px;transition:.25s}nav small{font-size:10px}nav .on{color:var(--t);background:linear-gradient(135deg,#8b5cf63a,#ec48993a)}nav .on svg{color:#c4a6ff;filter:drop-shadow(0 0 6px #8b5cf6)}
+.card{background:var(--c);border:1px solid var(--cb);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:18px;padding:14px;margin:10px 0;animation:up .4s both}.c{text-align:center}
+h3{margin:18px 0 6px;font-size:17px}
+input,textarea,select{width:100%;padding:12px;margin:5px 0;border-radius:12px;border:1px solid var(--cb);background:var(--c);color:var(--t);font:inherit;transition:.2s}
+input:focus,textarea:focus,select:focus{outline:0;border-color:var(--a);box-shadow:0 0 0 3px #8b5cf633}
+.b{width:100%;padding:13px;margin:5px 0;border:0;border-radius:14px;background:linear-gradient(90deg,#8b5cf6,#ec4899);color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 22px #8b5cf655;transition:.2s}.b:active{transform:scale(.97)}
+.red{background:linear-gradient(90deg,#dc2626,#f43f5e);box-shadow:0 6px 22px #dc262655}
+.s{padding:7px 12px;border:0;border-radius:10px;background:linear-gradient(90deg,#8b5cf6,#a855f7);color:#fff;margin:4px 4px 0 0;display:inline-flex;align-items:center;gap:5px}.s.red{background:linear-gradient(90deg,#dc2626,#f43f5e)}
+.link{background:none;border:0;color:#a78bfa;padding:6px 0;font-size:15px;display:inline-flex;align-items:center;gap:4px}a{color:#a78bfa}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.game{background:var(--c);border:1px solid var(--cb);border-radius:20px;padding:18px 12px;color:var(--t);display:flex;flex-direction:column;align-items:center;gap:10px;transition:.2s;animation:up .4s both}.game:active{transform:scale(.96)}.game img{width:100%;height:90px;object-fit:cover;border-radius:14px}.game b{font-size:14px}
+.gi{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(135deg,#f97316,#ec4899);color:#fff;box-shadow:0 8px 26px #f9731677}
+.b2{display:flex;justify-content:space-between;align-items:center;width:100%;color:var(--t);font-size:15px;transition:.2s;border:1px solid var(--cb)}.b2:active{transform:scale(.98);border-color:var(--a)}.b2 span{display:flex;align-items:center;gap:8px}.b2 svg{color:#67e8f9}
+.ov{position:fixed;inset:0;background:#000a;backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:20;padding:16px}
+.box{background:var(--nav);border:1px solid var(--cb);border-radius:22px;padding:20px;width:100%;max-width:420px;max-height:90vh;overflow:auto;animation:pop .25s both;box-shadow:0 20px 60px #0008}
+.full{background:var(--bg)}.st{text-align:center;width:100%;max-width:420px}.st svg{filter:drop-shadow(0 0 18px currentColor);animation:pl 1.6s infinite}.st.ok{color:#22c55e}.st.no{color:#ef4444}.st.ok svg,.st.no svg{animation:none}
+.tabs{display:flex;gap:6px;overflow-x:auto}.tabs button{border:1px solid var(--cb);border-radius:12px;padding:9px 14px;background:var(--c);color:var(--t);white-space:nowrap}.tabs .on{background:linear-gradient(90deg,#8b5cf6,#ec4899);border:0;color:#fff}
+.stars span{font-size:32px;color:#555;cursor:pointer;transition:.15s}.stars .on{color:#facc15;text-shadow:0 0 12px #facc1588}
+.wa{display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(90deg,#16a34a,#25d366);color:#fff;padding:13px;border-radius:14px;margin:7px 0;text-decoration:none;font-weight:700;box-shadow:0 6px 20px #25d36655}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;margin:3px 0}.tag.p{background:#f59e0b26;color:#f59e0b}.tag.d{background:#22c55e26;color:#22c55e}.tag.x{background:#ef444426;color:#ef4444}
+.ic{vertical-align:-4px;flex:none}.row{display:flex;gap:4px;align-items:center}.p{width:100%;border-radius:12px}
 .auth{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
 </style></head><body><div id="app"></div>
 <script>window.onerror=(m)=>{document.body.insertAdjacentHTML('afterbegin','<div style="padding:16px;margin:12px;background:#dc2626;color:#fff;border-radius:10px;font:14px sans-serif">⚠️ Error: '+String(m).replace(/</g,'&lt;')+'<br><small>Revisa SUPA_URL y SUPA_KEY en index.html y tu conexión a internet.</small></div>')}</script>
@@ -36,17 +43,19 @@ const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
 const $=(s,r=document)=>r.querySelector(s),A=$('#app');
 const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=n=>Number(n).toFixed(2),mail=p=>p+'@zyrox.app';
-const st=s=>({pending:'⏳ Pendiente',done:'✅ Realizado',rejected:'❌ Rechazado'}[s]);
+const st=s=>({pending:`<span class="tag p">${ic('clock',14)}Pendiente</span>`,done:`<span class="tag d">${ic('check',14)}Realizado</span>`,rejected:`<span class="tag x">${ic('x',14)}Rechazado</span>`}[s]);
 const dt=d=>new Date(d).toLocaleString();
-const WA=['53975065','53148263'];
-const wa=WA.map(n=>`<a class=wa target=_blank rel=noopener href="https://wa.me/53${n}">💬 WhatsApp ${n}</a>`).join('');
 let U,S={rate:270},G=[],O=[],tab='home',sel={},at='users',W={};
 if(localStorage.l)document.body.classList.add('light');
 
+const IC={"home": "M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10", "box": "M12 3l9 5v8l-9 5-9-5V8zM3 8l9 5 9-5M12 13v8", "wallet": "M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l2-3h12v3M16 13.5h2", "user": "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0", "shield": "M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z", "sun": "M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5", "coin": "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM14.5 9.5C14 8.5 13 8 12 8c-1.5 0-2.5.8-2.5 1.8s1 1.6 2.5 2 2.5 1 2.5 2.2S13.5 16 12 16c-1 0-2-.5-2.5-1.5M12 6.5V8M12 16v1.5", "store": "M4 9l1-5h14l1 5M4 9a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0M5 12v8h14v-8", "gem": "M6 3h12l4 6-10 12L2 9zM2 9h20", "flame": "M12 22a7 7 0 0 0 7-7c0-3-2-5-3-8-2 1-3 3-3 4-2-1-2-4-3-6-3 2-5 5-5 9a7 7 0 0 0 7 8z", "bell": "M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21a2 2 0 0 0 4 0", "clock": "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2", "check": "M5 12l5 5 9-10", "x": "M6 6l12 12M18 6L6 18", "trash": "M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3", "edit": "M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4", "plus": "M12 5v14M5 12h14", "back": "M15 5l-7 7 7 7", "gift": "M3 11h18v10H3zM2 7h20v4H2zM12 7v14M12 7S9 7 8 5.500 9 3 10.500 4 12 7 12 7zM12 7s3 0 4-1.5S15 3 13.500 4 12 7 12 7z", "copy": "M9 9h11v11H9zM5 15V4h11", "logout": "M9 4H5v16h4M16 8l4 4-4 4M20 12H9", "lock": "M6 11h12v10H6zM8 11V7a4 4 0 0 1 8 0v4", "phone": "M6 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L16 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z", "wa": "M3 21l1.7-5A9 9 0 1 1 8 19.3zM9 9c0 3 3 6 6 6l1-1.5-2-1-1 .5c-1-.5-2-1.5-2.5-2.5l.5-1-1-2z", "ban": "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM5.6 5.6l12.8 12.8", "crown": "M3 8l4 4 5-7 5 7 4-4-2 11H5z"};
+const ic=(n,z=20)=>`<svg class=ic width=${z} height=${z} viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="${IC[n]}"/></svg>`;
+const sup=()=>(S.support??'53975065,53148263').split(',').filter(Boolean);
+const wa=()=>sup().map(n=>`<a class=wa target=_blank rel=noopener href="https://wa.me/${n.length>8?n:'53'+n}">${ic('wa')} WhatsApp ${E(n)}</a>`).join('');
 function modal(h,f){const d=document.createElement('div');d.className='ov';d.innerHTML=`<div class=box>${h}<button class=link id=x>Cerrar</button></div>`;document.body.append(d);$('#x',d).onclick=()=>d.remove();f&&f(d);return d}
 
 function authView(reg){
- A.innerHTML=`<div class=auth><div class="box c"><h1 class=logo>ZYROX</h1><p>Recargas de videojuegos 🇨🇺</p>${reg?'<input id=n placeholder="Nombre">':''}<input id=p type=tel autocomplete=username placeholder="Número (ej: 53975065)"><input id=w type=password autocomplete=${reg?'new-password':'current-password'} placeholder="Contraseña"><button class=b id=go>${reg?'Crear cuenta':'Iniciar sesión'}</button><button class=link id=sw>${reg?'Ya tengo cuenta':'Crear una cuenta'}</button></div></div>`;
+ A.innerHTML=`<div class=auth><div class="box c"><h1 class=logo>ZYROX</h1><p>Recargas de videojuegos · Cuba</p>${reg?'<input id=n placeholder="Nombre">':''}<input id=p type=tel autocomplete=username placeholder="Número (ej: 53975065)"><input id=w type=password autocomplete=${reg?'new-password':'current-password'} placeholder="Contraseña"><button class=b id=go>${reg?'Crear cuenta':'Iniciar sesión'}</button><button class=link id=sw>${reg?'Ya tengo cuenta':'Crear una cuenta'}</button></div></div>`;
  $('#sw').onclick=()=>authView(!reg);
  $('#go').onclick=async()=>{
   const p=$('#p').value.replace(/\D/g,''),w=$('#w').value;
@@ -71,9 +80,9 @@ async function boot(){
  U=u;await loadData();shell()}
 
 function shell(){
- const t=[['home','🏠','Inicio'],['orders','📦','Pedidos'],['wallet','💰','Wallet'],['prof','👤','Perfil']];
- if(U.is_admin&&U.phone==ADMIN||U.is_admin)t.push(['admin','⚙️','Admin']);
- A.innerHTML=`<header><h1 class=logo>ZYROX</h1><span><button class=r id=th>🌓</button><button class=r id=cr>💲</button><button class=r id=sh>🛒</button></span></header><main id=m></main><nav>${t.map(x=>`<button data-t=${x[0]} class="${x[0]==tab?'on':''}">${x[1]}<small>${x[2]}</small></button>`).join('')}</nav>`;
+ const t=[['home','home','Inicio'],['orders','box','Pedidos'],['wallet','wallet','Wallet'],['prof','user','Perfil']];
+ if(U.is_admin&&U.phone==ADMIN||U.is_admin)t.push(['admin','shield','Admin']);
+ A.innerHTML=`<header><h1 class=logo>ZYROX</h1><span><button class=r id=th>${ic('sun',18)}</button><button class=r id=cr>${ic('coin',18)}</button><button class=r id=sh>${ic('store',18)}</button></span></header><main id=m></main><nav>${t.map(x=>`<button data-t=${x[0]} class="${x[0]==tab?'on':''}">${ic(x[1],22)}<small>${x[2]}</small></button>`).join('')}</nav>`;
  $('#th').onclick=()=>{localStorage.l=document.body.classList.toggle('light')?1:'';};
  $('#cr').onclick=()=>modal(`<div class=c><small>Tus créditos</small><h1>${money(U.balance)} USD</h1></div>`);
  $('#sh').onclick=()=>{tab='home';sel={};shell()};
@@ -83,12 +92,12 @@ function shell(){
 // ---------- INICIO ----------
 async function home(){
  const[{data:n},{data:rv}]=await Promise.all([sb.from('notices').select().order('id',{ascending:false}).limit(1),sb.from('reviews').select().order('id',{ascending:false}).limit(6)]);
- let h=n&&n[0]?`<div class=card>📢 ${E(n[0].text)}</div>`:'';
+ let h=n&&n[0]?`<div class=card>${ic('bell',18)} ${E(n[0].text)}</div>`:'';
  const g=G.find(x=>x.id==sel.g);
- if(!g)h+=`<h3>Elige un juego</h3><div class=grid>${G.map(x=>`<button class=game onclick="W.g(${x.id})">${x.img?`<img src="${E(x.img)}">`:'🔥'}<b>${E(x.name)}</b></button>`).join('')}</div>`;
- else if(!sel.r)h+=`<button class=link onclick="W.g()">← Volver</button><h3>${E(g.name)}</h3><p>Elige la región</p><button class=b onclick="W.r()">${E(g.region)}</button>`;
- else h+=`<button class=link onclick="W.g()">← Volver</button><h3>${E(g.name)} · ${E(g.region)}</h3>${O.filter(o=>o.game_id==g.id).map(o=>`<button class="card b2" onclick="W.o(${o.id})"><span>💎 ${E(o.label)}</span><b>${money(o.price)} USD</b></button>`).join('')}`;
- h+=`<h3>Deja tu reseña</h3><div class=card><div class=stars id=sr>${[1,2,3,4,5].map(i=>`<span data-i=${i} class=on>★</span>`).join('')}</div><textarea id=cm placeholder="Tu comentario"></textarea><button class=b id=rv>Enviar reseña</button></div>${(rv||[]).map(r=>`<div class=card><span style="color:#facc15">${'★'.repeat(r.stars)}</span> <b>${E(r.name)}</b><br>${E(r.text)}</div>`).join('')}<h3>Soporte</h3>${wa}`;
+ if(!g)h+=`<h3>Elige un juego</h3><div class=grid>${G.map(x=>`<button class=game onclick="W.g(${x.id})">${x.img?`<img src="${E(x.img)}">`:`<span class=gi>${ic('flame',34)}</span>`}<b>${E(x.name)}</b></button>`).join('')}</div>`;
+ else if(!sel.r)h+=`<button class=link onclick="W.g()">${ic('back',16)} Volver</button><h3>${E(g.name)}</h3><p>Elige la región</p><button class=b onclick="W.r()">${E(g.region)}</button>`;
+ else h+=`<button class=link onclick="W.g()">${ic('back',16)} Volver</button><h3>${E(g.name)} · ${E(g.region)}</h3>${O.filter(o=>o.game_id==g.id).map(o=>`<button class="card b2" onclick="W.o(${o.id})"><span>${ic('gem',16)} ${E(o.label)}</span><b>${money(o.price)} USD</b></button>`).join('')}`;
+ h+=`<h3>Deja tu reseña</h3><div class=card><div class=stars id=sr>${[1,2,3,4,5].map(i=>`<span data-i=${i} class=on>★</span>`).join('')}</div><textarea id=cm placeholder="Tu comentario"></textarea><button class=b id=rv>Enviar reseña</button></div>${(rv||[]).map(r=>`<div class=card><span style="color:#facc15">${'★'.repeat(r.stars)}</span> <b>${E(r.name)}</b><br>${E(r.text)}</div>`).join('')}<h3>Soporte</h3>${wa()}`;
  $('#m').innerHTML=h;
  let rate=5;
  $('#sr').onclick=e=>{const i=+e.target.dataset.i;if(!i)return;rate=i;[...$('#sr').children].forEach((s,k)=>s.classList.toggle('on',k<i))};
@@ -99,7 +108,7 @@ W.o=id=>offer(O.find(x=>x.id==id));
 
 function offer(o){
  const g=G.find(x=>x.id==o.game_id);
- const d=modal(`<h3>Tu pedido</h3><p>🎮 ${E(g.name)} · ${E(g.region)}<br>💎 ${E(o.label)}<br>💵 <b>${money(o.price)} USD</b></p><input id=pid placeholder="ID de jugador de Free Fire"><button class=b id=pay>Pagar</button>`);
+ const d=modal(`<h3>Tu pedido</h3><p>${ic('flame',16)} ${E(g.name)} · ${E(g.region)}<br>${ic('gem',16)} ${E(o.label)}<br>${ic('coin',16)} <b>${money(o.price)} USD</b></p><input id=pid placeholder="ID de jugador de Free Fire"><button class=b id=pay>Pagar</button>`);
  $('#pay',d).onclick=async()=>{
   const pid=$('#pid',d).value.trim();if(!pid)return alert('Pon tu ID de jugador');
   if(Number(U.balance)<Number(o.price))return alert('❌ No tienes crédito suficiente. Deposita en Wallet.');
@@ -109,12 +118,12 @@ function offer(o){
 
 function track(id,o,pid,g){
  const d=document.createElement('div');d.className='ov full';
- const body=(t,c)=>`<div class="st ${c}"><h1>${t}</h1><p style="color:var(--t)">🎮 ${E(g.name)} · ${E(g.region)}<br>💎 ${E(o.label)} · ${money(o.price)} USD<br>ID: ${E(pid)}<br>Pedido #${id}</p><button class=b id=mn>${c?'Cerrar':'Minimizar'}</button></div>`;
+ const body=(t,c)=>`<div class="st ${c}"><h1>${t}</h1><p style="color:var(--t)">${ic('flame',16)} ${E(g.name)} · ${E(g.region)}<br>${ic('gem',16)} ${E(o.label)} · ${money(o.price)} USD<br>ID: ${E(pid)}<br>Pedido #${id}</p><button class=b id=mn>${c?'Cerrar':'Minimizar'}</button></div>`;
  const set=(t,c)=>{d.innerHTML=body(t,c);$('#mn',d).onclick=()=>c?d.remove():d.style.display='none'};
- set('⏳ Tu pedido está siendo procesado','');document.body.append(d);
+ set(ic('clock',56)+'<br>Tu pedido está siendo procesado','');document.body.append(d);
  const iv=setInterval(async()=>{
   const{data}=await sb.from('orders').select('status').eq('id',id).single();
-  if(data&&data.status!='pending'){clearInterval(iv);const ok=data.status=='done';set(ok?'✅ Realizado':'❌ Rechazado',ok?'ok':'no');d.style.display='';refreshU()}},3000)}
+  if(data&&data.status!='pending'){clearInterval(iv);const ok=data.status=='done';set(ok?ic('check',56)+'<br>Realizado':ic('x',56)+'<br>Rechazado',ok?'ok':'no');d.style.display='';refreshU()}},3000)}
 
 // ---------- PEDIDOS ----------
 async function orders(){
@@ -125,7 +134,7 @@ async function orders(){
 async function wallet(){
  await refreshU();
  const{data}=await sb.from('deposits').select().eq('user_id',U.id).order('id',{ascending:false});
- $('#m').innerHTML=`<div class="card c"><small>Saldo disponible</small><h1>${money(U.balance)} USD</h1><button class=b id=dp>Depositar</button></div><h3>Movimientos</h3><small>Los depósitos sin revisar se borran a los 30 minutos.</small>${data.map(d=>`<div class=card><b>+${money(d.usd)} USD</b> (${d.cup} Saldo Móvil)<br>${st(d.status)} <small>${dt(d.created_at)}</small></div>`).join('')}`;
+ $('#m').innerHTML=`<div class="card c"><small>Saldo disponible</small><h1>${money(U.balance)} USD</h1><button class=b id=dp>${ic('plus',16)} Depositar</button></div><h3>Movimientos</h3><small>Los depósitos sin revisar se borran a los 30 minutos.</small>${data.map(d=>`<div class=card><b>+${money(d.usd)} USD</b> (${d.cup} Saldo Móvil)<br>${st(d.status)} <small>${dt(d.created_at)}</small></div>`).join('')}`;
  $('#dp').onclick=dep1}
 
 function dep1(){
@@ -152,7 +161,7 @@ function dep3(usd){
 // ---------- PERFIL ----------
 function prof(){
  const link=location.origin+location.pathname+'?ref='+U.phone;
- $('#m').innerHTML=`<div class=card><b>${E(U.name)}</b><br>📱 ${E(U.phone)}<br>💰 ${money(U.balance)} USD<br><small>Miembro desde ${new Date(U.created_at).toLocaleDateString()}</small></div><button class=b id=pw>Cambiar contraseña</button><div class=card><b>Soporte</b>${wa}</div><div class=card><b>🎁 Invita y gana</b><br><small>Recibes el 5% del primer depósito de cada persona que invites.</small><input readonly value="${E(link)}"><button class=b id=cp>Copiar enlace</button></div><button class="b red" id=lo>Cerrar sesión</button>`;
+ $('#m').innerHTML=`<div class=card><b>${E(U.name)}</b><br>${ic('phone',16)} ${E(U.phone)}<br>${ic('coin',16)} ${money(U.balance)} USD<br><small>Miembro desde ${new Date(U.created_at).toLocaleDateString()}</small></div><button class=b id=pw>${ic('lock',16)} Cambiar contraseña</button><div class=card><b>Soporte</b>${wa()}</div><div class=card><b>${ic('gift',18)} Invita y gana</b><br><small>Recibes el 5% del primer depósito de cada persona que invites.</small><input readonly value="${E(link)}"><button class=b id=cp>${ic('copy',16)} Copiar enlace</button></div><button class="b red" id=lo>${ic('logout',16)} Cerrar sesión</button>`;
  $('#pw').onclick=async()=>{const w=prompt('Nueva contraseña (mín. 6)');if(!w||w.length<6)return;const{error}=await sb.auth.updateUser({password:w});alert(error?'Error':'✅ Contraseña cambiada')};
  $('#cp').onclick=()=>{navigator.clipboard.writeText(link);alert('Copiado')};
  $('#lo').onclick=async()=>{await sb.auth.signOut();location.reload()}}
@@ -168,19 +177,20 @@ const A_={
   ad.innerHTML=`<h3>Clientes: ${data.length}</h3><input id=q placeholder="Buscar por nombre o número"><div id=ul></div>
   <div class=card><b>Créditos</b><input id=cph placeholder="Número del cliente"><input id=cam type=number step=0.01 placeholder="USD"><button class=b onclick="W.cr(1)">Enviar</button><button class="b red" onclick="W.cr(-1)">Quitar</button></div>
   <div class=card><b>Aviso a todos</b><textarea id=nt></textarea><button class=b onclick="W.nt()">Enviar aviso</button></div>`;
-  const draw=()=>{const q=$('#q').value.toLowerCase();$('#ul').innerHTML=data.filter(u=>(u.name+u.phone).toLowerCase().includes(q)).map(u=>`<div class=card>${E(u.name)} · ${u.phone}${u.is_admin?' 👑':''}${u.banned?' 🚫':''}<br>💰 ${money(u.balance)} USD${u.phone==ADMIN?'':`<br><button class=s onclick="W.au('${u.phone}','admin')">${u.is_admin?'Quitar admin':'Hacer admin'}</button><button class="s red" onclick="W.au('${u.phone}','ban')">${u.banned?'Desbanear':'Banear'}</button>`}</div>`).join('')};
+  const draw=()=>{const q=$('#q').value.toLowerCase();$('#ul').innerHTML=data.filter(u=>(u.name+u.phone).toLowerCase().includes(q)).map(u=>`<div class=card>${E(u.name)} · ${u.phone}${u.is_admin?ic('crown',16):''}${u.banned?ic('ban',16):''}<br>${ic('coin',16)} ${money(u.balance)} USD${u.phone==ADMIN?'':`<br><button class=s onclick="W.au('${u.phone}','admin')">${u.is_admin?'Quitar admin':'Hacer admin'}</button><button class="s red" onclick="W.au('${u.phone}','ban')">${u.banned?'Desbanear':'Banear'}</button>`}</div>`).join('')};
   $('#q').oninput=draw;draw()},
  async ord(ad){
   const{data}=await sb.from('orders').select('*,profiles(name,phone)').order('id',{ascending:false});
-  ad.innerHTML=`<h3>Pedidos (${data.length})</h3>`+data.map(o=>`<div class=card><b>#${o.id} ${E(o.game)} ${E(o.region)}</b> · ${E(o.label)}<br>${money(o.price)} USD · ID jugador: <b>${E(o.player_id)}</b><br>👤 ${E(o.profiles?.name)} · ${o.profiles?.phone}<br>${st(o.status)} <small>${dt(o.created_at)}</small>${o.status=='pending'?`<br><button class=s onclick="W.ao(${o.id},true)">Aceptar</button><button class="s red" onclick="W.ao(${o.id},false)">Rechazar</button>`:''}</div>`).join('')},
+  ad.innerHTML=`<h3>Pedidos (${data.length})</h3>`+data.map(o=>`<div class=card><b>#${o.id} ${E(o.game)} ${E(o.region)}</b> · ${E(o.label)}<br>${money(o.price)} USD · ID jugador: <b>${E(o.player_id)}</b><br>${ic('user',16)} ${E(o.profiles?.name)} · ${o.profiles?.phone}<br>${st(o.status)} <small>${dt(o.created_at)}</small>${o.status=='pending'?`<br><button class=s onclick="W.ao(${o.id},true)">Aceptar</button><button class="s red" onclick="W.ao(${o.id},false)">Rechazar</button>`:''}</div>`).join('')},
  async dep(ad){
   const{data}=await sb.from('deposits').select('*,profiles(name,phone)').order('id',{ascending:false});
-  ad.innerHTML=`<h3>Depósitos (${data.length})</h3>`+data.map(d=>`<div class=card><b>#${d.id} ${money(d.usd)} USD</b> (${d.cup} Saldo Móvil)<br>👤 ${E(d.profiles?.name)} · ${d.profiles?.phone}<br>Envió desde: ${E(d.from_phone)} → a ${E(d.pay_num)}<br>${st(d.status)} <small>${dt(d.created_at)}</small><br><img class=p src="${E(d.proof)}">${d.status=='pending'?`<br><button class=s onclick="W.ad(${d.id},true)">Acreditar</button><button class="s red" onclick="W.ad(${d.id},false)">Rechazar</button>`:''}</div>`).join('')},
+  ad.innerHTML=`<h3>Depósitos (${data.length})</h3>`+data.map(d=>`<div class=card><b>#${d.id} ${money(d.usd)} USD</b> (${d.cup} Saldo Móvil)<br>${ic('user',16)} ${E(d.profiles?.name)} · ${d.profiles?.phone}<br>Envió desde: ${E(d.from_phone)} → a ${E(d.pay_num)}<br>${st(d.status)} <small>${dt(d.created_at)}</small><br><img class=p src="${E(d.proof)}">${d.status=='pending'?`<br><button class=s onclick="W.ad(${d.id},true)">Acreditar</button><button class="s red" onclick="W.ad(${d.id},false)">Rechazar</button>`:''}</div>`).join('')},
  async cfg(ad){
   const[{data:pn},_]=await Promise.all([sb.from('pay_numbers').select().order('pos'),loadData()]);
   ad.innerHTML=`<div class=card><b>1 USD =</b><input id=rt type=number value="${S.rate}"> Saldo Móvil<button class=b onclick="W.rate()">Guardar</button></div>
-  <div class=card><b>Números de Saldo Móvil</b><br><small>Número · depósitos antes de pasar al siguiente · orden (1 primero). Cuando se llenan todos, no sale ninguno.</small>${pn.map(p=>`<div class="row pr" data-i=${p.id}><input value="${E(p.num)}"><input type=number value=${p.max_dep}><input type=number value=${p.pos}><button class=s onclick="W.pd(${p.id})">🗑</button></div>`).join('')}<button class=s onclick="W.pa()">+ Número</button><button class=b onclick="W.pn()">Guardar números</button></div>
-  <div class=card><b>Juegos y ofertas</b>${G.map(g=>`<div class=card style="background:var(--bg)"><b>${E(g.name)}</b> <button class=s onclick="W.gd(${g.id})">Quitar juego</button>${O.filter(o=>o.game_id==g.id).map(o=>`<div class=row><span style="flex:1">${E(o.label)} · ${money(o.price)} USD</span><button class=s onclick="W.oe(${o.id})">✏️</button><button class=s onclick="W.od(${o.id})">🗑</button></div>`).join('')}<button class=s onclick="W.oa(${g.id})">+ Oferta</button></div>`).join('')}<button class=b onclick="W.ga()">+ Añadir juego</button></div>`}};
+  <div class=card><b>Números de Saldo Móvil</b><br><small>Número · depósitos antes de pasar al siguiente · orden (1 primero). Cuando se llenan todos, no sale ninguno.</small>${pn.map(p=>`<div class="row pr" data-i=${p.id}><input value="${E(p.num)}"><input type=number value=${p.max_dep}><input type=number value=${p.pos}><button class=s onclick="W.pd(${p.id})">${ic('trash',16)}</button></div>`).join('')}<button class=s onclick="W.pa()">+ Número</button><button class=b onclick="W.pn()">Guardar números</button></div>
+  <div class=card><b>Números de soporte (WhatsApp)</b>${sup().map((n,i)=>`<div class=row><span style="flex:1">${E(n)}</span><button class=s onclick="W.se(${i})">${ic('edit',14)}</button><button class=s onclick="W.sd(${i})">${ic('trash',14)}</button></div>`).join('')}<button class=s onclick="W.sa()">${ic('plus',14)} Añadir número</button></div>
+  <div class=card><b>Juegos y ofertas</b>${G.map(g=>`<div class=card style="background:var(--bg)"><b>${E(g.name)}</b> <button class=s onclick="W.gd(${g.id})">Quitar juego</button>${O.filter(o=>o.game_id==g.id).map(o=>`<div class=row><span style="flex:1">${E(o.label)} · ${money(o.price)} USD</span><button class=s onclick="W.oe(${o.id})">${ic('edit',16)}</button><button class=s onclick="W.od(${o.id})">${ic('trash',16)}</button></div>`).join('')}<button class=s onclick="W.oa(${g.id})">+ Oferta</button></div>`).join('')}<button class=b onclick="W.ga()">+ Añadir juego</button></div>`}};
 const rl=async(f)=>{await f;admin()};
 W.ao=(i,ok)=>rl(sb.rpc('admin_order',{i,ok}));
 W.ad=(i,ok)=>rl(sb.rpc('admin_deposit',{i,ok}));
@@ -196,5 +206,9 @@ W.gd=i=>confirm('¿Quitar juego y sus ofertas?')&&rl(sb.from('games').delete().e
 W.oa=g=>{const label=prompt('Oferta (ej: 110 diamantes)'),price=parseFloat(prompt('Precio USD'));if(label&&price)rl(sb.from('offers').insert({game_id:g,label,price}))};
 W.oe=i=>{const price=parseFloat(prompt('Nuevo precio USD'));if(price)rl(sb.from('offers').update({price}).eq('id',i))};
 W.od=i=>rl(sb.from('offers').delete().eq('id',i));
+const setSup=async a=>{await sb.from('settings').upsert({key:'support',value:a.join(',')});S.support=a.join(',');admin()};
+W.sa=()=>{const n=(prompt('Número de WhatsApp (ej: 53975065)')||'').replace(/\D/g,'');if(n)setSup([...sup(),n])};
+W.se=i=>{const n=(prompt('Nuevo número',sup()[i])||'').replace(/\D/g,'');if(n){const a=sup();a[i]=n;setSup(a)}};
+W.sd=i=>setSup(sup().filter((_,k)=>k!=i));
 boot();
 </script></body></html>
