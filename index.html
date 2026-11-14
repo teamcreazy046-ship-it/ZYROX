@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ZYROX</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script>
 <style>
 :root{--bg:#0b0b14;--c:#171726;--t:#f1f1f8;--a:#7c3aed;--m:#9a9ab5}
 body.light{--bg:#f3f3fa;--c:#fff;--t:#16162a;--m:#666}
@@ -46,7 +46,7 @@ if(localStorage.l)document.body.classList.add('light');
 function modal(h,f){const d=document.createElement('div');d.className='ov';d.innerHTML=`<div class=box>${h}<button class=link id=x>Cerrar</button></div>`;document.body.append(d);$('#x',d).onclick=()=>d.remove();f&&f(d);return d}
 
 function authView(reg){
- A.innerHTML=`<div class=auth><div class="box c"><h1 class=logo>ZYROX</h1><p>Recargas de videojuegos 🇨🇺</p>${reg?'<input id=n placeholder="Nombre">':''}<input id=p type=tel placeholder="Número (ej: 53975065)"><input id=w type=password placeholder="Contraseña"><button class=b id=go>${reg?'Crear cuenta':'Iniciar sesión'}</button><button class=link id=sw>${reg?'Ya tengo cuenta':'Crear una cuenta'}</button></div></div>`;
+ A.innerHTML=`<div class=auth><div class="box c"><h1 class=logo>ZYROX</h1><p>Recargas de videojuegos 🇨🇺</p>${reg?'<input id=n placeholder="Nombre">':''}<input id=p type=tel autocomplete=username placeholder="Número (ej: 53975065)"><input id=w type=password autocomplete=${reg?'new-password':'current-password'} placeholder="Contraseña"><button class=b id=go>${reg?'Crear cuenta':'Iniciar sesión'}</button><button class=link id=sw>${reg?'Ya tengo cuenta':'Crear una cuenta'}</button></div></div>`;
  $('#sw').onclick=()=>authView(!reg);
  $('#go').onclick=async()=>{
   const p=$('#p').value.replace(/\D/g,''),w=$('#w').value;
@@ -55,7 +55,7 @@ function authView(reg){
   if(reg){const n=$('#n').value.trim();if(!n)return alert('Pon tu nombre');
    r=await sb.auth.signUp({email:mail(p),password:w,options:{data:{name:n,phone:p,ref:new URLSearchParams(location.search).get('ref')||''}}})}
   else r=await sb.auth.signInWithPassword({email:mail(p),password:w});
-  if(r.error)return alert(/already/i.test(r.error.message)?'Ese número ya está registrado':'Datos incorrectos');
+  if(r.error)return alert(/already/i.test(r.error.message)?'Ese número ya está registrado':(reg?'No se pudo crear la cuenta: ':'Número o contraseña incorrectos. ')+r.error.message);
   boot()}}
 
 async function loadData(){
