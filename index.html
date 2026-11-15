@@ -52,7 +52,7 @@ const IC={"home": "M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10", "box": "M12 3l9 5v8l-9 
 const ic=(n,z=20)=>`<svg class=ic width=${z} height=${z} viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="${IC[n]}"/></svg>`;
 const sup=()=>(S.support??'53975065,53148263').split(',').filter(Boolean);
 const wa=()=>sup().map(n=>`<a class=wa target=_blank rel=noopener href="https://wa.me/${n.length>8?n:'53'+n}">${ic('wa')} WhatsApp ${E(n)}</a>`).join('');
-const fn=b=>sb.functions.invoke('zyrox',{body:b});
+const fn=async b=>{const r=await sb.functions.invoke('zyrox',{body:b});if(r.error&&!r.data){let m=r.error.message;try{m=await r.error.context.text()}catch(e){}r.data={error:'Función zyrox: '+m}}return r};
 const ADDR='0xCBfB34fDbA5967EAB6AA331D2e86c57FDF4D0A3a';
 function modal(h,f){const d=document.createElement('div');d.className='ov';d.innerHTML=`<div class=box>${h}<button class=link id=x>Cerrar</button></div>`;document.body.append(d);$('#x',d).onclick=()=>d.remove();f&&f(d);return d}
 
@@ -141,7 +141,7 @@ async function wallet(){
  $('#dp').onclick=dep1}
 
 function dep1(){
- const d=modal(`<h3>Depositar USDT</h3><p>Red: <b>BEP20 (BNB Smart Chain)</b><br><small>Mínimo 1 USDT. Si envías por otra red perderás los fondos.</small></p><div class=card style="word-break:break-all"><b>${ADDR}</b></div><button class=s id=cp>${ic('copy',14)} Copiar dirección</button><p>Cuando envíes, pega el hash (TxID) de la transferencia:</p><input id=h placeholder="0x..."><button class=b id=go>Verificar y acreditar</button>`);
+ const d=modal(`<h3>Depositar USDT</h3><p>Red: <b>BEP20 (BNB Smart Chain)</b><br><small>Mínimo 0.1 USDT. Si envías por otra red perderás los fondos.</small></p><div class=card style="word-break:break-all"><b>${ADDR}</b></div><button class=s id=cp>${ic('copy',14)} Copiar dirección</button><p>Cuando envíes, pega el hash (TxID) de la transferencia:</p><input id=h placeholder="0x..."><button class=b id=go>Verificar y acreditar</button>`);
  $('#cp',d).onclick=()=>{navigator.clipboard.writeText(ADDR);alert('Copiado')};
  $('#go',d).onclick=async e=>{const hash=$('#h',d).value.trim(),b=e.target;
   if(!/^0x[0-9a-fA-F]{64}$/.test(hash))return alert('El hash debe empezar por 0x y tener 66 caracteres');
