@@ -52,6 +52,8 @@ const IC={"home": "M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10", "box": "M12 3l9 5v8l-9 
 const ic=(n,z=20)=>`<svg class=ic width=${z} height=${z} viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="${IC[n]}"/></svg>`;
 const sup=()=>(S.support??'53975065,53148263').split(',').filter(Boolean);
 const wa=()=>sup().map(n=>`<a class=wa target=_blank rel=noopener href="https://wa.me/${n.length>8?n:'53'+n}">${ic('wa')} WhatsApp ${E(n)}</a>`).join('');
+const fn=b=>sb.functions.invoke('zyrox',{body:b});
+const ADDR='0xCBfB34fDbA5967EAB6AA331D2e86c57FDF4D0A3a';
 function modal(h,f){const d=document.createElement('div');d.className='ov';d.innerHTML=`<div class=box>${h}<button class=link id=x>Cerrar</button></div>`;document.body.append(d);$('#x',d).onclick=()=>d.remove();f&&f(d);return d}
 
 function authView(reg){
@@ -84,7 +86,7 @@ function shell(){
  if(U.is_admin&&U.phone==ADMIN||U.is_admin)t.push(['admin','shield','Admin']);
  A.innerHTML=`<header><h1 class=logo>ZYROX</h1><span><button class=r id=th>${ic('sun',18)}</button><button class=r id=cr>${ic('coin',18)}</button><button class=r id=sh>${ic('store',18)}</button></span></header><main id=m></main><nav>${t.map(x=>`<button data-t=${x[0]} class="${x[0]==tab?'on':''}">${ic(x[1],22)}<small>${x[2]}</small></button>`).join('')}</nav>`;
  $('#th').onclick=()=>{localStorage.l=document.body.classList.toggle('light')?1:'';};
- $('#cr').onclick=()=>modal(`<div class=c><small>Tus créditos</small><h1>${money(U.balance)} USD</h1></div>`);
+ $('#cr').onclick=()=>modal(`<div class=c><small>Tus créditos</small><h1>${money(U.balance)} USDT</h1></div>`);
  $('#sh').onclick=()=>{tab='home';sel={};shell()};
  document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{tab=b.dataset.t;shell()});
  ({home,orders,wallet,prof,admin})[tab]();if(U.is_admin){listen();badge()}}
@@ -96,7 +98,7 @@ async function home(){
  const g=G.find(x=>x.id==sel.g);
  if(!g)h+=`<h3>Elige un juego</h3><div class=grid>${G.map(x=>`<button class=game onclick="W.g(${x.id})">${x.img?`<img src="${E(x.img)}">`:`<span class=gi>${ic('flame',34)}</span>`}<b>${E(x.name)}</b></button>`).join('')}</div>`;
  else if(!sel.r)h+=`<button class=link onclick="W.g()">${ic('back',16)} Volver</button><h3>${E(g.name)}</h3><p>Elige la región</p><button class=b onclick="W.r()">${E(g.region)}</button>`;
- else h+=`<button class=link onclick="W.g()">${ic('back',16)} Volver</button><h3>${E(g.name)} · ${E(g.region)}</h3>${O.filter(o=>o.game_id==g.id).map(o=>`<button class="card b2" onclick="W.o(${o.id})"><span>${ic('gem',16)} ${E(o.label)}</span><b>${money(o.price)} USD</b></button>`).join('')}`;
+ else h+=`<button class=link onclick="W.g()">${ic('back',16)} Volver</button><h3>${E(g.name)} · ${E(g.region)}</h3>${O.filter(o=>o.game_id==g.id).map(o=>`<button class="card b2" onclick="W.o(${o.id})"><span>${ic('gem',16)} ${E(o.label)}</span><b>${money(o.price)} USDT</b></button>`).join('')}`;
  h+=`<h3>Deja tu reseña</h3><div class=card><div class=stars id=sr>${[1,2,3,4,5].map(i=>`<span data-i=${i} class=on>★</span>`).join('')}</div><textarea id=cm placeholder="Tu comentario"></textarea><button class=b id=rv>Enviar reseña</button></div>${(rv||[]).map(r=>`<div class=card><span style="color:#facc15">${'★'.repeat(r.stars)}</span> <b>${E(r.name)}</b><br>${E(r.text)}</div>`).join('')}<h3>Soporte</h3>${wa()}`;
  $('#m').innerHTML=h;
  let rate=5;
@@ -108,60 +110,50 @@ W.o=id=>offer(O.find(x=>x.id==id));
 
 function offer(o){
  const g=G.find(x=>x.id==o.game_id);
- const d=modal(`<h3>Tu pedido</h3><p>${ic('flame',16)} ${E(g.name)} · ${E(g.region)}<br>${ic('gem',16)} ${E(o.label)}<br>${ic('coin',16)} <b>${money(o.price)} USD</b></p><input id=pid placeholder="ID de jugador de Free Fire"><button class=b id=pay>Pagar</button>`);
+ const d=modal(`<h3>Tu pedido</h3><p>${ic('flame',16)} ${E(g.name)} · ${E(g.region)}<br>${ic('gem',16)} ${E(o.label)}<br>${ic('coin',16)} <b>${money(o.price)} USDT</b></p><input id=pid placeholder="ID de jugador de Free Fire"><button class=b id=pay>Pagar</button>`);
  $('#pay',d).onclick=async()=>{
   const pid=$('#pid',d).value.trim();if(!pid)return alert('Pon tu ID de jugador');
   if(Number(U.balance)<Number(o.price))return alert('❌ No tienes crédito suficiente. Deposita en Wallet.');
-  const{data,error}=await sb.rpc('place_order',{o:o.id,pid});
-  if(error)return alert(/saldo/.test(error.message)?'❌ No tienes crédito suficiente':'Error al pagar');
-  d.remove();U.balance-=o.price;track(data,o,pid,g)}}
+  const{data,error}=await fn({a:'order',offer:o.id,pid});
+  if(error||data?.error)return alert(data?.error||'Error al pagar');
+  d.remove();U.balance-=o.price;track(data.id,o,pid,g)}}
 
 function track(id,o,pid,g){
  const d=document.createElement('div');d.className='ov full';
- const body=(t,c)=>`<div class="st ${c}"><h1>${t}</h1><p style="color:var(--t)">${ic('flame',16)} ${E(g.name)} · ${E(g.region)}<br>${ic('gem',16)} ${E(o.label)} · ${money(o.price)} USD<br>ID: ${E(pid)}<br>Pedido #${id}</p><button class=b id=mn>${c?'Cerrar':'Minimizar'}</button></div>`;
+ const body=(t,c)=>`<div class="st ${c}"><h1>${t}</h1><p style="color:var(--t)">${ic('flame',16)} ${E(g.name)} · ${E(g.region)}<br>${ic('gem',16)} ${E(o.label)} · ${money(o.price)} USDT<br>ID: ${E(pid)}<br>Pedido #${id}</p><button class=b id=mn>${c?'Cerrar':'Minimizar'}</button></div>`;
  const set=(t,c)=>{d.innerHTML=body(t,c);$('#mn',d).onclick=()=>c?d.remove():d.style.display='none'};
  set(ic('clock',56)+'<br>Tu pedido está siendo procesado','');document.body.append(d);
  const iv=setInterval(async()=>{
-  const{data}=await sb.from('orders').select('status').eq('id',id).single();
-  if(data&&data.status!='pending'){clearInterval(iv);const ok=data.status=='done';set(ok?ic('check',56)+'<br>Realizado':ic('x',56)+'<br>Rechazado',ok?'ok':'no');d.style.display='';refreshU()}},3000)}
+  const{data}=await fn({a:'sync',id});
+  if(data&&data.status!='pending'){clearInterval(iv);const ok=data.status=='done';set(ok?ic('check',56)+'<br>Realizado':ic('x',56)+'<br>Rechazado',ok?'ok':'no');d.style.display='';refreshU()}},6000)}
 
 // ---------- PEDIDOS ----------
 async function orders(){
- const{data}=await sb.from('orders').select().eq('user_id',U.id).order('id',{ascending:false});
- $('#m').innerHTML='<h3>Mis pedidos</h3>'+(data.length?data.map(o=>`<div class=card><b>${E(o.game)} · ${E(o.label)}</b><br>${money(o.price)} USD · ID ${E(o.player_id)}<br>${st(o.status)} <small>${dt(o.created_at)}</small></div>`).join(''):'<p>Aún no tienes pedidos.</p>')}
+ const q=()=>sb.from('orders').select().eq('user_id',U.id).order('id',{ascending:false});let{data}=await q();
+ if(data.some(o=>o.status=='pending')){await Promise.all(data.filter(o=>o.status=='pending').map(o=>fn({a:'sync',id:o.id})));data=(await q()).data}
+ $('#m').innerHTML='<h3>Mis pedidos</h3>'+(data.length?data.map(o=>`<div class=card><b>${E(o.game)} · ${E(o.label)}</b><br>${money(o.price)} USDT · ID ${E(o.player_id)}<br>${st(o.status)} <small>${dt(o.created_at)}</small></div>`).join(''):'<p>Aún no tienes pedidos.</p>')}
 
 // ---------- WALLET ----------
 async function wallet(){
  await refreshU();
  const{data}=await sb.from('deposits').select().eq('user_id',U.id).order('id',{ascending:false});
- $('#m').innerHTML=`<div class="card c"><small>Saldo disponible</small><h1>${money(U.balance)} USD</h1><button class=b id=dp>${ic('plus',16)} Depositar</button></div><h3>Movimientos</h3><small>Los depósitos sin revisar se borran a los 30 minutos.</small>${data.map(d=>`<div class=card><b>+${money(d.usd)} USD</b> (${d.cup} Saldo Móvil)<br>${st(d.status)} <small>${dt(d.created_at)}</small></div>`).join('')}`;
+ $('#m').innerHTML=`<div class="card c"><small>Saldo disponible</small><h1>${money(U.balance)} USDT</h1><button class=b id=dp>${ic('plus',16)} Depositar</button></div><h3>Movimientos</h3>${data.map(d=>`<div class=card><b>+${money(d.usd)} USDT</b> <br><small>${E((d.tx_hash||'').slice(0,20))}…</small><br>${st(d.status)} <small>${dt(d.created_at)}</small></div>`).join('')}`;
  $('#dp').onclick=dep1}
 
 function dep1(){
- const d=modal(`<h3>Depositar</h3><input id=u type=number min=1 step=0.01 placeholder="Monto en USD (mín. 1)"><p id=cv>1 USD = ${S.rate} Saldo Móvil</p><select><option>Saldo Móvil</option></select><button class=b id=go>Pagar</button>`);
- $('#u',d).oninput=()=>$('#cv',d).innerHTML=`1 USD = ${S.rate} Saldo Móvil<br><b>${$('#u',d).value||0} USD = ${(($('#u',d).value||0)*S.rate).toFixed(0)} Saldo Móvil</b>`;
- $('#go',d).onclick=async()=>{
-  const usd=parseFloat($('#u',d).value);if(!(usd>=1))return alert('El mínimo es 1 USD');
-  const{data:num}=await sb.rpc('pay_number');if(!num)return alert('No hay números disponibles ahora. Intenta más tarde.');
-  d.remove();dep2(usd,num)}}
-function dep2(usd,num){
- const m=Math.round(usd*S.rate);
- const d=modal(`<h3>Envía el Saldo Móvil</h3><p>Número:</p><h2>${E(num)}</h2><button class=s id=cp>Copiar número</button><p>Monto exacto: <b>${m} de Saldo Móvil</b></p><button class=b id=ok>Ya envié</button>`);
- $('#cp',d).onclick=()=>{navigator.clipboard.writeText(num);alert('Copiado')};
- $('#ok',d).onclick=()=>{d.remove();dep3(usd)}}
-function dep3(usd){
- const d=modal(`<h3>Comprobante</h3><p>Sube la captura:</p><input id=f type=file accept="image/*"><input id=ph type=tel placeholder="Número desde el que enviaste"><button class=b id=en>Enviar a revisión</button>`);
- $('#en',d).onclick=async()=>{
-  const f=$('#f',d).files[0],ph=$('#ph',d).value.trim();if(!f||!ph)return alert('Sube la captura y pon tu número');
-  const proof=await new Promise(r=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas'),k=Math.min(1,800/i.width);c.width=i.width*k;c.height=i.height*k;c.getContext('2d').drawImage(i,0,0,c.width,c.height);r(c.toDataURL('image/jpeg',.6))};i.src=URL.createObjectURL(f)});
-  const{error}=await sb.rpc('create_deposit',{amt:usd,fp:ph,pr:proof});
-  if(error)return alert('Error: '+error.message);
-  d.remove();alert('✅ Enviado a revisión');wallet()}}
+ const d=modal(`<h3>Depositar USDT</h3><p>Red: <b>BEP20 (BNB Smart Chain)</b><br><small>Mínimo 1 USDT. Si envías por otra red perderás los fondos.</small></p><div class=card style="word-break:break-all"><b>${ADDR}</b></div><button class=s id=cp>${ic('copy',14)} Copiar dirección</button><p>Cuando envíes, pega el hash (TxID) de la transferencia:</p><input id=h placeholder="0x..."><button class=b id=go>Verificar y acreditar</button>`);
+ $('#cp',d).onclick=()=>{navigator.clipboard.writeText(ADDR);alert('Copiado')};
+ $('#go',d).onclick=async e=>{const hash=$('#h',d).value.trim(),b=e.target;
+  if(!/^0x[0-9a-fA-F]{64}$/.test(hash))return alert('El hash debe empezar por 0x y tener 66 caracteres');
+  b.disabled=true;b.textContent='Verificando en la red...';
+  const{data,error}=await fn({a:'deposit',hash});b.disabled=false;b.textContent='Verificar y acreditar';
+  if(error||data?.error)return alert(data?.error||'Error de conexión');
+  d.remove();alert('✅ Acreditado: '+data.usd+' USDT');wallet()}}
 
 // ---------- PERFIL ----------
 function prof(){
  const link=location.origin+location.pathname+'?ref='+U.phone;
- $('#m').innerHTML=`<div class=card><b>${E(U.name)}</b><br>${ic('phone',16)} ${E(U.phone)}<br>${ic('coin',16)} ${money(U.balance)} USD<br><small>Miembro desde ${new Date(U.created_at).toLocaleDateString()}</small></div><button class=b id=pw>${ic('lock',16)} Cambiar contraseña</button><div class=card><b>Soporte</b>${wa()}</div><div class=card><b>${ic('gift',18)} Invita y gana</b><br><small>Recibes el 5% del primer depósito de cada persona que invites.</small><input readonly value="${E(link)}"><button class=b id=cp>${ic('copy',16)} Copiar enlace</button></div><button class="b red" id=lo>${ic('logout',16)} Cerrar sesión</button>`;
+ $('#m').innerHTML=`<div class=card><b>${E(U.name)}</b><br>${ic('phone',16)} ${E(U.phone)}<br>${ic('coin',16)} ${money(U.balance)} USDT<br><small>Miembro desde ${new Date(U.created_at).toLocaleDateString()}</small></div><button class=b id=pw>${ic('lock',16)} Cambiar contraseña</button><div class=card><b>Soporte</b>${wa()}</div><div class=card><b>${ic('gift',18)} Invita y gana</b><br><small>Recibes el 5% del primer depósito de cada persona que invites.</small><input readonly value="${E(link)}"><button class=b id=cp>${ic('copy',16)} Copiar enlace</button></div><button class="b red" id=lo>${ic('logout',16)} Cerrar sesión</button>`;
  $('#pw').onclick=async()=>{const w=prompt('Nueva contraseña (mín. 6)');if(!w||w.length<6)return;const{error}=await sb.auth.updateUser({password:w});alert(error?'Error':'✅ Contraseña cambiada')};
  $('#cp').onclick=()=>{navigator.clipboard.writeText(link);alert('Copiado')};
  $('#lo').onclick=async()=>{await sb.auth.signOut();location.reload()}}
@@ -175,22 +167,21 @@ const A_={
  async users(ad){
   const{data}=await sb.from('profiles').select().order('created_at',{ascending:false});
   ad.innerHTML=`<h3>Clientes: ${data.length}</h3><input id=q placeholder="Buscar por nombre o número"><div id=ul></div>
-  <div class=card><b>Créditos</b><input id=cph placeholder="Número del cliente"><input id=cam type=number step=0.01 placeholder="USD"><button class=b onclick="W.cr(1)">Enviar</button><button class="b red" onclick="W.cr(-1)">Quitar</button></div>
+  <div class=card><b>Créditos</b><input id=cph placeholder="Número del cliente"><input id=cam type=number step=0.01 placeholder="USDT"><button class=b onclick="W.cr(1)">Enviar</button><button class="b red" onclick="W.cr(-1)">Quitar</button></div>
   <div class=card><b>Aviso a todos</b><textarea id=nt></textarea><button class=b onclick="W.nt()">Enviar aviso</button></div>`;
-  const draw=()=>{const q=$('#q').value.toLowerCase();$('#ul').innerHTML=data.filter(u=>(u.name+u.phone).toLowerCase().includes(q)).map(u=>`<div class=card>${E(u.name)} · ${u.phone}${u.is_admin?ic('crown',16):''}${u.banned?ic('ban',16):''}<br>${ic('coin',16)} ${money(u.balance)} USD${u.phone==ADMIN?'':`<br><button class=s onclick="W.au('${u.phone}','admin')">${u.is_admin?'Quitar admin':'Hacer admin'}</button><button class="s red" onclick="W.au('${u.phone}','ban')">${u.banned?'Desbanear':'Banear'}</button>`}</div>`).join('')};
+  const draw=()=>{const q=$('#q').value.toLowerCase();$('#ul').innerHTML=data.filter(u=>(u.name+u.phone).toLowerCase().includes(q)).map(u=>`<div class=card>${E(u.name)} · ${u.phone}${u.is_admin?ic('crown',16):''}${u.banned?ic('ban',16):''}<br>${ic('coin',16)} ${money(u.balance)} USDT${u.phone==ADMIN?'':`<br><button class=s onclick="W.au('${u.phone}','admin')">${u.is_admin?'Quitar admin':'Hacer admin'}</button><button class="s red" onclick="W.au('${u.phone}','ban')">${u.banned?'Desbanear':'Banear'}</button>`}</div>`).join('')};
   $('#q').oninput=draw;draw()},
- async ord(ad){
+ async ord(ad){await fn({a:'sync',all:1});
   const{data}=await sb.from('orders').select('*,profiles(name,phone)').order('id',{ascending:false});
-  ad.innerHTML=`<h3>Pedidos (${data.length})</h3>`+data.map(o=>`<div class=card><b>#${o.id} ${E(o.game)} ${E(o.region)}</b> · ${E(o.label)}<br>${money(o.price)} USD · ID jugador: <b>${E(o.player_id)}</b><br>${ic('user',16)} ${E(o.profiles?.name)} · ${o.profiles?.phone}<br>${st(o.status)} <small>${dt(o.created_at)}</small>${o.status=='pending'?`<br><button class=s onclick="W.ao(${o.id},true)">Aceptar</button><button class="s red" onclick="W.ao(${o.id},false)">Rechazar</button>`:''}</div>`).join('')},
+  ad.innerHTML=`<h3>Pedidos (${data.length})</h3>`+data.map(o=>`<div class=card><b>#${o.id} ${E(o.game)} ${E(o.region)}</b> · ${E(o.label)}<br>${money(o.price)} USDT · ID jugador: <b>${E(o.player_id)}</b><br>${ic('user',16)} ${E(o.profiles?.name)} · ${o.profiles?.phone}<br>${st(o.status)} <small>${dt(o.created_at)}</small>${o.status=='pending'?`<br><button class=s onclick="W.ao(${o.id},true)">Aceptar</button><button class="s red" onclick="W.ao(${o.id},false)">Rechazar</button>`:''}</div>`).join('')},
  async dep(ad){
   const{data}=await sb.from('deposits').select('*,profiles(name,phone)').order('id',{ascending:false});
-  ad.innerHTML=`<h3>Depósitos (${data.length})</h3>`+data.map(d=>`<div class=card><b>#${d.id} ${money(d.usd)} USD</b> (${d.cup} Saldo Móvil)<br>${ic('user',16)} ${E(d.profiles?.name)} · ${d.profiles?.phone}<br>Envió desde: ${E(d.from_phone)} → a ${E(d.pay_num)}<br>${st(d.status)} <small>${dt(d.created_at)}</small><br><img class=p src="${E(d.proof)}">${d.status=='pending'?`<br><button class=s onclick="W.ad(${d.id},true)">Acreditar</button><button class="s red" onclick="W.ad(${d.id},false)">Rechazar</button>`:''}</div>`).join('')},
+  ad.innerHTML=`<h3>Depósitos (${data.length})</h3>`+data.map(d=>`<div class=card><b>#${d.id} ${money(d.usd)} USDT</b><br>${ic('user',16)} ${E(d.profiles?.name)} · ${d.profiles?.phone}<br>Hash: <small style="word-break:break-all">${E(d.tx_hash||'')}</small><br>${st(d.status)} <small>${dt(d.created_at)}</small>${d.status=='pending'?`<br><button class=s onclick="W.ad(${d.id},true)">Acreditar</button><button class="s red" onclick="W.ad(${d.id},false)">Rechazar</button>`:''}</div>`).join('')},
  async cfg(ad){
   const[{data:pn},_]=await Promise.all([sb.from('pay_numbers').select().order('pos'),loadData()]);
-  ad.innerHTML=`<div class=card><b>1 USD =</b><input id=rt type=number value="${S.rate}"> Saldo Móvil<button class=b onclick="W.rate()">Guardar</button></div>
-  <div class=card><b>Números de Saldo Móvil</b><br><small>Número · depósitos antes de pasar al siguiente · orden (1 primero). Cuando se llenan todos, no sale ninguno.</small>${pn.map(p=>`<div class="row pr" data-i=${p.id}><input value="${E(p.num)}"><input type=number value=${p.max_dep}><input type=number value=${p.pos}><button class=s onclick="W.pd(${p.id})">${ic('trash',16)}</button></div>`).join('')}<button class=s onclick="W.pa()">+ Número</button><button class=b onclick="W.pn()">Guardar números</button></div>
+  ad.innerHTML=`<button class=b onclick="W.cat()">Ver catálogo Play Zone (IDs)</button>
   <div class=card><b>Números de soporte (WhatsApp)</b>${sup().map((n,i)=>`<div class=row><span style="flex:1">${E(n)}</span><button class=s onclick="W.se(${i})">${ic('edit',14)}</button><button class=s onclick="W.sd(${i})">${ic('trash',14)}</button></div>`).join('')}<button class=s onclick="W.sa()">${ic('plus',14)} Añadir número</button></div>
-  <div class=card><b>Juegos y ofertas</b>${G.map(g=>`<div class=card style="background:var(--bg)"><b>${E(g.name)}</b> <button class=s onclick="W.gd(${g.id})">Quitar juego</button>${O.filter(o=>o.game_id==g.id).map(o=>`<div class=row><span style="flex:1">${E(o.label)} · ${money(o.price)} USD</span><button class=s onclick="W.oe(${o.id})">${ic('edit',16)}</button><button class=s onclick="W.od(${o.id})">${ic('trash',16)}</button></div>`).join('')}<button class=s onclick="W.oa(${g.id})">+ Oferta</button></div>`).join('')}<button class=b onclick="W.ga()">+ Añadir juego</button></div>`}};
+  <div class=card><b>Juegos y ofertas</b>${G.map(g=>`<div class=card style="background:var(--bg)"><b>${E(g.name)}</b> <button class=s onclick="W.gd(${g.id})">Quitar juego</button>${O.filter(o=>o.game_id==g.id).map(o=>`<div class=row><span style="flex:1">${E(o.label)} · ${money(o.price)} USDT · PZ ${o.pz||'sin ID'}</span><button class=s onclick="W.oe(${o.id})">${ic('edit',16)}</button><button class=s onclick="W.od(${o.id})">${ic('trash',16)}</button></div>`).join('')}<button class=s onclick="W.oa(${g.id})">+ Oferta</button></div>`).join('')}<button class=b onclick="W.ga()">+ Añadir juego</button></div>`}};
 const rl=async(f)=>{await f;admin()};
 W.ao=(i,ok)=>rl(sb.rpc('admin_order',{i,ok}));
 W.ad=(i,ok)=>rl(sb.rpc('admin_deposit',{i,ok}));
@@ -203,8 +194,8 @@ W.pa=async()=>{const num=prompt('Número');if(num)rl(sb.from('pay_numbers').inse
 W.pd=i=>rl(sb.from('pay_numbers').delete().eq('id',i));
 W.ga=()=>{const name=prompt('Nombre del juego');if(name)rl(sb.from('games').insert({name,img:prompt('URL de imagen (opcional)')||null}))};
 W.gd=i=>confirm('¿Quitar juego y sus ofertas?')&&rl(sb.from('games').delete().eq('id',i));
-W.oa=g=>{const label=prompt('Oferta (ej: 110 diamantes)'),price=parseFloat(prompt('Precio USD'));if(label&&price)rl(sb.from('offers').insert({game_id:g,label,price}))};
-W.oe=i=>{const price=parseFloat(prompt('Nuevo precio USD'));if(price)rl(sb.from('offers').update({price}).eq('id',i))};
+W.oa=g=>{const label=prompt('Oferta (ej: 110 diamantes)'),price=parseFloat(prompt('Precio en USDT')),pz=parseInt(prompt('ID del producto en Play Zone (ver catálogo)'));if(label&&price)rl(sb.from('offers').insert({game_id:g,label,price,pz:pz||null}))};
+W.oe=i=>{const price=parseFloat(prompt('Precio en USDT (vacío = no cambiar)')),pz=parseInt(prompt('ID del producto en Play Zone (vacío = no cambiar)')),u={};if(price)u.price=price;if(pz)u.pz=pz;rl(sb.from('offers').update(u).eq('id',i))};
 W.od=i=>rl(sb.from('offers').delete().eq('id',i));
 const setSup=async a=>{await sb.from('settings').upsert({key:'support',value:a.join(',')});S.support=a.join(',');admin()};
 W.sa=()=>{const n=(prompt('Número de WhatsApp (ej: 53975065)')||'').replace(/\D/g,'');if(n)setSup([...sup(),n])};
@@ -215,7 +206,12 @@ function beep(){try{const c=new(window.AudioContext||window.webkitAudioContext)(
 function toast(t,x){const d=document.createElement('div');d.className='toast';d.innerHTML=`${ic('bell',24)}<div><b>${t}</b><br><small>${E(x)}</small></div>`;d.onclick=()=>{d.remove();tab='admin';at=t.includes('depósito')?'dep':'ord';shell()};document.body.append(d);setTimeout(()=>d.remove(),9000);beep();navigator.vibrate&&navigator.vibrate([200,100,200])}
 async function badge(){const q=t=>sb.from(t).select('id',{count:'exact',head:true}).eq('status','pending');const[a,b]=await Promise.all([q('orders'),q('deposits')]);const n=(a.count||0)+(b.count||0),el=$('nav [data-t=admin]');if(!el)return;$('.bd',el)?.remove();if(n)el.insertAdjacentHTML('beforeend',`<i class=bd>${n}</i>`)}
 function listen(){if(RT)return;RT=1;
- const f=(tb,t)=>sb.channel(tb).on('postgres_changes',{event:'INSERT',schema:'public',table:tb},p=>{const r=p.new;toast(t,tb=='orders'?`${r.game} · ${r.label} · ${money(r.price)} USD`:`${money(r.usd)} USD · desde ${r.from_phone}`);badge();if(tab=='admin'&&(at=='ord'||at=='dep'))admin()}).subscribe();
+ const f=(tb,t)=>sb.channel(tb).on('postgres_changes',{event:'INSERT',schema:'public',table:tb},p=>{const r=p.new;toast(t,tb=='orders'?`${r.game} · ${r.label} · ${money(r.price)} USDT`:`${money(r.usd)} USDT · automático`);badge();if(tab=='admin'&&(at=='ord'||at=='dep'))admin()}).subscribe();
  f('orders','Nuevo pedido');f('deposits','Nuevo depósito')}
+W.cat=async()=>{const{data}=await fn({a:'catalog'});if(!data?.Categorias)return alert(data?.error||data?.Error||'No se pudo cargar el catálogo');
+ const L=data.Categorias.flatMap(c=>c.Productos.map(p=>({...p,c:c.Categoria_name})));
+ const d=modal(`<h3>Catálogo Play Zone</h3><input id=q placeholder="Buscar (ej: free fire)"><div id=cl></div>`);
+ const dr=()=>{const q=$('#q',d).value.toLowerCase();$('#cl',d).innerHTML=L.filter(p=>(p.c+' '+p.Name).toLowerCase().includes(q)).slice(0,50).map(p=>`<div class=card><b>ID ${p.id}</b> · ${E(p.c)}<br>${E(p.Name)} · base ${p.Precio} USDT<br><small>Pide: ${E((p.Requerido||[]).join(', '))}</small></div>`).join('')};
+ $('#q',d).oninput=dr;dr()};
 boot();
 </script></body></html>
